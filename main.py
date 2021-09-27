@@ -1,3 +1,4 @@
+# Autores: Fábio Franz,  Paulo R. M. Gonçalves, Minéia Maschio
 import sys
 import threading
 import cliente
