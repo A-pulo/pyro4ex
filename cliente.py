@@ -17,16 +17,16 @@ class ClienteRelogio(object):
         return self.__clock
 
     def set_clock(self, flag, clock_delta):
-        print(type(clock_delta))
-        print(clock_delta)
+        clock_delta = timedelta(seconds=clock_delta)
         hora = self.__clock
         hora = datetime.combine(datetime.today(), hora)
         if flag == '-':
             hora -= clock_delta
         elif flag == '+':
             hora += clock_delta
+        hora_antiga = self.__clock
         self.__clock = hora.time()
-        print(f'cliente.relogio_{self.__idf}: Hora ajustada para {self.__clock} ({flag}{clock_delta})')
+        print(f'cliente.relogio_{self.__idf}: Hora ajustada de {hora_antiga} para {self.__clock} ({flag}{clock_delta})')
 
 
 def run_client(idf):

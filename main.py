@@ -27,16 +27,16 @@ class ServidorRelogio(object):
 
     # Método para atualizar o relógio a partir de um valor de ajuste recebido
     def set_clock(self, flag, clock_delta):
-        print(type(clock_delta))
-        print(clock_delta)
+        clock_delta = timedelta(seconds=clock_delta)
         hora = self.__clock
         hora = datetime.combine(datetime.today(), hora)
         if flag == '-':
             hora -= clock_delta
         elif flag == '+':
             hora += clock_delta
+        hora_antiga = self.__clock
         self.__clock = hora.time()
-        print(f'servidor.relogio: Hora ajustada para {self.__clock} ({flag}{clock_delta})')
+        print(f'servidor.relogio: Hora ajustada de {hora_antiga} para {self.__clock} ({flag}{clock_delta})')
 
     # Algorimimo de ajuste dos relógios
     def berkeley(self, li_clientes: dict):
@@ -58,7 +58,6 @@ class ServidorRelogio(object):
             relogios[cliente_uri] = hora_delta
             delta += hora_delta
         delta /= len(relogios)
-        print(type(delta))
 
         # Aplica a diferença da média e envia aos clientes para atualização
         for cliente_uri in relogios:
