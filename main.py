@@ -14,7 +14,6 @@ sys.excepthook = Pyro4.util.excepthook
 
 
 @Pyro4.expose
-@Pyro4.callback
 class ServidorRelogio(object):
 
     def __init__(self):
@@ -29,14 +28,15 @@ class ServidorRelogio(object):
         return self.__clock
 
     # Método para atualizar o relógio a partir de um valor de ajuste recebido
-    def set_clock(self, clock_delta: timedelta):
-        hora = timedelta(hours=self.__clock.hour,
-                         minutes=self.__clock.minute,
-                         seconds=self.__clock.second)
-        hora -= clock_delta
-        hora = (datetime.min + hora).time()
-        self.__clock = hora
-        print(f'servidor.relogio: Hora ajustada para {hora} (-{clock_delta})')
+    def set_clock(self, flag, clock_delta):
+        hora = self.__clock
+        hora = datetime.combine(datetime.today(), hora)
+        if flag == '-':
+            hora -= clock_delta
+        elif flag == '+':
+            hora += clock_delta
+        self.__clock = hora.time()
+        print(f'servidor.relogio: Hora ajustada para {self.__clock} ({flag}{clock_delta})')
 
     # Algorimimo de ajuste dos relógios
     def berkeley(self, li_clientes: dict):
@@ -58,12 +58,19 @@ class ServidorRelogio(object):
             relogios[cliente_uri] = hora_delta
             delta += hora_delta
         delta /= len(relogios)
+        print(delta)
 
         # Aplica a diferença da média e envia aos clientes para atualização
         for cliente_uri in relogios:
-            relogios[cliente_uri] -= delta
+            hora_cliente = relogios[cliente_uri]
+            if hora_cliente > delta:
+                relogios[cliente_uri] -= delta
+                flag = '-'
+            else:
+                relogios[cliente_uri] = delta - relogios[cliente_uri]
+                flag = '+'
             with Pyro4.Proxy(cliente_uri) as proxy_cliente:
-                proxy_cliente.set_clock(relogios[cliente_uri])
+                proxy_cliente.set_clock(flag, relogios[cliente_uri])
 
 
 if __name__ == '__main__':

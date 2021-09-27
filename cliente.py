@@ -2,14 +2,13 @@ import sys
 import threading
 import Pyro4
 from Pyro4 import util
-from datetime import time, timedelta
+from datetime import datetime, time, timedelta
 from random import randrange
 
 sys.excepthook = Pyro4.util.excepthook
 
 
 @Pyro4.expose
-@Pyro4.callback
 class ClienteRelogio(object):
 
     def __init__(self, idf):
@@ -19,9 +18,15 @@ class ClienteRelogio(object):
     def get_clock(self):
         return self.__clock
 
-    def set_clock(self, clock_delta: timedelta):
-        self.__clock -= clock_delta
-        print(f'cliente.relogio_{self.__idf}: Hora ajustada para {self.__clock} (-{clock_delta})')
+    def set_clock(self, flag, clock_delta):
+        hora = self.__clock
+        hora = datetime.combine(datetime.today(), hora)
+        if flag == '-':
+            hora -= clock_delta
+        elif flag == '+':
+            hora += clock_delta
+        self.__clock = hora.time()
+        print(f'cliente.relogio_{self.__idf}: Hora ajustada para {self.__clock} ({flag}{clock_delta})')
 
 
 def run_client(idf):
