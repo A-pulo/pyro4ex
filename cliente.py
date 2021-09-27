@@ -5,8 +5,6 @@ from Pyro4 import util
 from datetime import datetime, time, timedelta
 from random import randrange
 
-sys.excepthook = Pyro4.util.excepthook
-
 
 @Pyro4.expose
 class ClienteRelogio(object):
@@ -19,6 +17,8 @@ class ClienteRelogio(object):
         return self.__clock
 
     def set_clock(self, flag, clock_delta):
+        print(type(clock_delta))
+        print(clock_delta)
         hora = self.__clock
         hora = datetime.combine(datetime.today(), hora)
         if flag == '-':

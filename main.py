@@ -6,8 +6,6 @@ from Pyro4 import naming, util
 from datetime import datetime, time, timedelta
 from random import randrange
 
-sys.excepthook = Pyro4.util.excepthook
-
 
 # No contexto do Pyro4, tanto os clientes quanto o servidor para a implementação do algoritimo
 # de Berkeley serão objetos remotos
@@ -29,6 +27,8 @@ class ServidorRelogio(object):
 
     # Método para atualizar o relógio a partir de um valor de ajuste recebido
     def set_clock(self, flag, clock_delta):
+        print(type(clock_delta))
+        print(clock_delta)
         hora = self.__clock
         hora = datetime.combine(datetime.today(), hora)
         if flag == '-':
@@ -58,7 +58,7 @@ class ServidorRelogio(object):
             relogios[cliente_uri] = hora_delta
             delta += hora_delta
         delta /= len(relogios)
-        print(delta)
+        print(type(delta))
 
         # Aplica a diferença da média e envia aos clientes para atualização
         for cliente_uri in relogios:
